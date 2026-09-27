@@ -1,0 +1,1977 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07020d">
+<title>TAMZZY ICIKIWIR — NOKOS</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#07020d;--card:#12091c;--card2:#1b0d29;
+--p:#b84cff;--p2:#7b20ff;--p3:#e6b7ff;
+--txt:#fbf4ff;--muted:#a58aae;
+--line:rgba(184,76,255,.23);
+--green:#9cffc8;--red:#ff668f
+}
+body{
+min-height:100vh;color:var(--txt);
+font-family:Inter,system-ui,sans-serif;
+background:
+radial-gradient(circle at 10% 10%,rgba(123,32,255,.22),transparent 30%),
+radial-gradient(circle at 90% 20%,rgba(184,76,255,.15),transparent 32%),
+var(--bg);overflow-x:hidden
+}
+body:before{
+content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;
+background-image:
+linear-gradient(rgba(184,76,255,.18) 1px,transparent 1px),
+linear-gradient(90deg,rgba(184,76,255,.18) 1px,transparent 1px);
+background-size:40px 40px
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+.loader{
+position:fixed;inset:0;z-index:99999;
+display:grid;place-items:center;background:#040107;
+transition:.7s
+}
+.loader.hide{opacity:0;visibility:hidden}
+.loaderIn{text-align:center;width:min(86%,340px)}
+.loaderLogo{
+font-size:30px;font-weight:950;letter-spacing:3px;
+text-shadow:0 0 10px var(--p),0 0 30px rgba(184,76,255,.65)
+}
+.loaderText{
+margin-top:10px;color:var(--muted);
+font-size:10px;letter-spacing:2px
+}
+.loaderBar{
+height:4px;margin-top:22px;
+overflow:hidden;border-radius:99px;background:#1b0b27
+}
+.loaderBar:after{
+content:"";display:block;width:45%;height:100%;
+background:linear-gradient(90deg,var(--p2),var(--p3),var(--p));
+box-shadow:0 0 15px var(--p);
+animation:load 1.3s infinite
+}
+@keyframes load{
+from{transform:translateX(-130%)}
+to{transform:translateX(300%)}
+}
+
+.wrap{
+position:relative;z-index:2;
+width:min(calc(100% - 18px),610px);
+margin:auto;padding:20px 0 50px
+}
+.brand{
+display:flex;align-items:center;
+justify-content:space-between;margin-bottom:15px
+}
+.logo{font-size:20px;font-weight:950}
+.dev{font-size:9px;color:var(--muted);letter-spacing:1px}
+
+.page{display:none}
+.page.active{
+display:block;animation:pageIn .4s ease
+}
+@keyframes pageIn{
+from{opacity:0;transform:translateY(12px)}
+to{opacity:1;transform:none}
+}
+
+.card{
+border:1px solid var(--line);border-radius:22px;padding:18px;
+background:linear-gradient(145deg,rgba(18,9,28,.97),rgba(10,4,16,.97));
+box-shadow:0 20px 70px rgba(0,0,0,.38),
+inset 0 0 30px rgba(184,76,255,.025)
+}
+.badge{
+display:inline-flex;align-items:center;gap:7px;
+padding:7px 10px;border:1px solid var(--line);
+border-radius:999px;background:rgba(184,76,255,.06);
+color:var(--p3);font-size:9px;font-weight:900;
+letter-spacing:1px
+}
+.dot{
+width:7px;height:7px;border-radius:50%;
+background:var(--green);box-shadow:0 0 12px var(--green)
+}
+h1{margin-top:15px;font-size:30px;line-height:1.05}
+.sub{
+margin-top:10px;color:var(--muted);
+font-size:13px;line-height:1.6
+}
+
+.videoWrap{
+position:relative;overflow:hidden;margin-top:18px;
+border:1px solid var(--line);border-radius:18px;background:#030106
+}
+.videoWrap video{
+display:block;width:100%;aspect-ratio:16/9;object-fit:cover
+}
+.videoScan{
+position:absolute;inset:0;pointer-events:none;
+background:linear-gradient(to bottom,transparent,
+rgba(184,76,255,.08),transparent);
+background-size:100% 180%;
+animation:scan 4s linear infinite
+}
+@keyframes scan{
+from{background-position:0 -100%}
+to{background-position:0 200%}
+}
+
+.price{margin-top:18px;font-size:31px;font-weight:950}
+.label{
+display:block;margin:16px 0 7px;
+color:var(--muted);font-size:10px;font-weight:900
+}
+.input,.search,.select,.chatInput{
+width:100%;outline:none;border:1px solid var(--line);
+border-radius:13px;padding:13px 14px;
+color:#fff;background:#0b0412;transition:.25s
+}
+.input:focus,.search:focus,.select:focus,.chatInput:focus{
+border-color:rgba(184,76,255,.75);
+box-shadow:0 0 0 3px rgba(184,76,255,.05),
+0 0 25px rgba(184,76,255,.18)
+}
+.btn{
+position:relative;overflow:hidden;width:100%;margin-top:10px;
+padding:13px;border:1px solid var(--line);
+border-radius:13px;color:#fff;background:#11071a;
+font-weight:950;transition:.2s
+}
+.btn:hover{transform:translateY(-2px)}
+.primary{
+border-color:transparent;
+background:linear-gradient(135deg,#7b20ff,#b84cff);
+box-shadow:0 8px 30px rgba(123,32,255,.22)
+}
+
+.stats{
+display:grid;grid-template-columns:repeat(3,1fr);
+gap:8px;margin-bottom:12px
+}
+.stat{
+padding:13px 8px;text-align:center;
+border:1px solid var(--line);
+border-radius:15px;background:#12091c
+}
+.stat b{display:block;font-size:17px}
+.stat span{font-size:9px;color:var(--muted)}
+
+.toolbar{
+display:grid;grid-template-columns:1fr 145px;
+gap:8px;margin-bottom:13px
+}
+.grid{display:grid;gap:9px}
+
+.item{
+position:relative;overflow:hidden;
+border:1px solid var(--line);border-radius:16px;
+padding:13px;background:#0d0514;
+transition:.25s;animation:itemIn .35s ease both
+}
+.item:hover{
+transform:translateY(-3px);
+border-color:rgba(184,76,255,.5);
+box-shadow:0 12px 35px rgba(184,76,255,.08)
+}
+@keyframes itemIn{
+from{opacity:0;transform:translateY(10px) scale(.98)}
+to{opacity:1;transform:none}
+}
+.country{
+color:var(--p3);font-size:10px;font-weight:950
+}
+.num{
+margin-top:5px;font-size:16px;font-weight:850;
+overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.available{
+margin-top:5px;color:var(--green);font-size:9px
+}
+
+/* OTP */
+.codeBox{
+position:relative;display:flex;
+align-items:center;justify-content:space-between;
+gap:7px;margin-top:9px;min-height:54px;
+padding:8px 9px;overflow:hidden;
+border:1px solid var(--line);
+border-radius:11px;background:rgba(184,76,255,.045);
+transition:.3s
+}
+.codeBox.waiting{
+animation:codeWaiting 1.2s infinite
+}
+.codeBox.error{
+border-color:rgba(255,102,143,.5);
+background:rgba(255,102,143,.045);
+box-shadow:0 0 20px rgba(255,102,143,.08);
+animation:errorPulse 1.5s infinite
+}
+.codeLabel{
+font-size:8px;color:var(--muted);
+letter-spacing:1px
+}
+.codeValue{
+font-size:13px;font-weight:950;
+letter-spacing:1px;color:var(--red);
+transition:.3s;
+text-align:center
+}
+.codeTime{
+font-size:8px;color:var(--red);
+white-space:nowrap;text-align:right
+}
+.codeDots{
+display:flex;gap:4px;align-items:center
+}
+.codeDots i{
+width:5px;height:5px;border-radius:50%;
+background:var(--p);box-shadow:0 0 9px var(--p);
+animation:dotPulse 1s infinite
+}
+.codeDots i:nth-child(2){animation-delay:.15s}
+.codeDots i:nth-child(3){animation-delay:.3s}
+@keyframes codeWaiting{
+0%,100%{box-shadow:0 0 0 rgba(184,76,255,0)}
+50%{box-shadow:0 0 20px rgba(184,76,255,.12)}
+}
+@keyframes errorPulse{
+0%,100%{box-shadow:0 0 0 rgba(255,102,143,0)}
+50%{box-shadow:0 0 22px rgba(255,102,143,.12)}
+}
+@keyframes dotPulse{
+0%,100%{opacity:.25;transform:scale(.7)}
+50%{opacity:1;transform:scale(1.2)}
+}
+
+.copy{
+position:relative;overflow:hidden;width:100%;
+margin-top:10px;padding:9px;border:1px solid var(--line);
+border-radius:10px;background:#15091f;color:#fff;
+font-size:10px;font-weight:950;transition:.25s
+}
+.copy.copied{
+border-color:rgba(156,255,200,.65);
+background:rgba(156,255,200,.07);
+color:var(--green)
+}
+.empty{
+padding:25px;text-align:center;
+border:1px dashed var(--line);
+border-radius:15px;color:var(--muted)
+}
+
+.sasukeBanner{
+position:relative;width:100%;aspect-ratio:3.2/1;
+margin-bottom:15px;overflow:hidden;
+border:1px solid var(--line);border-radius:20px;
+box-shadow:0 0 30px rgba(184,76,255,.15)
+}
+.sasukeBanner img{
+width:100%;height:100%;display:block;object-fit:cover
+}
+
+/* FLOAT CHAT */
+.chatFloat,.privateChatFloat{
+position:fixed;right:18px;z-index:5000;
+width:58px;height:58px;border:1px solid rgba(184,76,255,.65);
+border-radius:50%;display:grid;place-items:center;
+background:radial-gradient(circle at 35% 30%,#e0a0ff,#7b20ff 55%,#250044);
+box-shadow:0 0 18px rgba(184,76,255,.55),
+0 0 45px rgba(123,32,255,.25);transition:.25s
+}
+.chatFloat{bottom:18px}
+.privateChatFloat{bottom:88px}
+.chatFloat:hover,.privateChatFloat:hover{transform:scale(1.08)}
+.chatFloatIcon,.privateChatIcon{
+position:relative;width:25px;height:20px;
+border:2px solid #fff;border-radius:9px
+}
+.chatFloatIcon:after,.privateChatIcon:after{
+content:"";position:absolute;left:3px;bottom:-6px;
+width:7px;height:7px;border-left:2px solid #fff;
+transform:skew(-25deg)
+}
+.privateChatIcon:before{
+content:"";position:absolute;width:6px;height:6px;
+border-radius:50%;background:#fff;left:5px;top:5px;
+box-shadow:9px 0 0 #fff
+}
+
+/* MODALS */
+.modal{
+position:fixed;inset:0;z-index:9000;display:none;
+place-items:center;padding:18px;background:rgba(2,0,5,.78);
+backdrop-filter:blur(9px)
+}
+.modal.show{display:grid}
+.modalBox{
+width:min(100%,430px);padding:18px;
+border:1px solid var(--line);border-radius:20px;
+background:linear-gradient(145deg,#13081d,#0a0410);
+box-shadow:0 25px 80px rgba(0,0,0,.6);
+animation:modalIn .25s ease
+}
+@keyframes modalIn{
+from{opacity:0;transform:scale(.94) translateY(12px)}
+to{opacity:1;transform:none}
+}
+.globalChatBox,.privateBox{
+max-height:calc(100vh - 30px);
+display:flex;flex-direction:column
+}
+.chatHead{
+display:flex;justify-content:space-between;
+align-items:center;gap:10px;margin-bottom:10px
+}
+.chatTitle{font-size:19px;font-weight:950}
+.online{
+margin-top:2px;font-size:9px;color:var(--green);
+font-weight:900;letter-spacing:1px
+}
+.chatMessages{
+height:min(48vh,350px);min-height:200px;
+overflow-y:auto;padding:4px 2px 8px
+}
+.chatLoading,.chatEmpty{
+padding:30px;text-align:center;
+color:var(--muted);font-size:10px
+}
+.msg{
+padding:10px;margin-bottom:8px;
+border:1px solid var(--line);
+border-radius:14px;background:#0c0513;
+animation:msgIn .25s ease
+}
+@keyframes msgIn{
+from{opacity:0;transform:translateY(5px)}
+to{opacity:1;transform:none}
+}
+.msgTop{
+display:flex;justify-content:space-between;
+gap:10px;margin-bottom:5px
+}
+.msgName{
+color:var(--p3);font-size:11px;font-weight:950
+}
+.msgTime{color:#765d80;font-size:8px}
+.msgText{
+font-size:12px;line-height:1.5;
+overflow-wrap:anywhere
+}
+.chatInputs{display:grid;gap:8px;margin-top:10px}
+.chatRow{display:grid;grid-template-columns:1fr 90px;gap:8px}
+.chatSend{
+border:0;border-radius:12px;color:#fff;
+background:linear-gradient(135deg,#7b20ff,#b84cff);
+font-weight:950
+}
+.chatCount{text-align:right;color:#765d80;font-size:8px}
+.chatError{min-height:14px;color:var(--red);font-size:9px}
+
+/* USERS */
+.privateSearchWrap{margin-bottom:8px}
+.privateFilters{display:flex;gap:6px;margin-bottom:8px}
+.privateFilter{
+flex:1;padding:8px;border:1px solid var(--line);
+border-radius:10px;background:#0c0513;
+color:var(--muted);font-size:9px;font-weight:950
+}
+.privateFilter.active{
+color:#fff;border-color:var(--p);
+background:rgba(184,76,255,.12)
+}
+.privateUsers{
+display:grid;grid-template-columns:repeat(2,1fr);
+gap:7px;max-height:180px;overflow-y:auto;padding:2px
+}
+.privateUser{
+width:100%;min-width:0;padding:11px;
+border:1px solid var(--line);border-radius:13px;
+background:#0c0513;color:#fff;text-align:left;transition:.25s
+}
+.privateUser:hover{
+transform:translateY(-2px);
+border-color:rgba(184,76,255,.65)
+}
+.privateUser.active{
+border-color:var(--p);
+background:rgba(184,76,255,.1)
+}
+.privateUserName{
+display:block;font-size:11px;font-weight:950;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.privateUserRole{
+display:block;margin-top:4px;
+font-size:8px;color:var(--muted)
+}
+.privateTarget{
+padding:10px 12px;margin:8px 0;
+border:1px solid var(--line);border-radius:12px;
+background:#0c0513;color:var(--p3);
+font-size:11px;font-weight:950
+}
+
+.toast{
+position:fixed;left:50%;bottom:22px;z-index:10000;
+transform:translate(-50%,20px);opacity:0;
+pointer-events:none;padding:11px 14px;
+border:1px solid var(--line);border-radius:12px;
+background:#10071a;color:#fff;font-size:10px;
+transition:.3s;white-space:nowrap
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.success{border-color:rgba(156,255,200,.45)}
+footer{
+text-align:center;margin-top:18px;
+color:#664d70;font-size:9px
+}
+
+@media(max-width:600px){
+.toolbar{grid-template-columns:1fr}
+.chatFloat,.privateChatFloat{
+right:14px;width:55px;height:55px
+}
+.chatFloat{bottom:14px}
+.privateChatFloat{bottom:79px}
+.privateUsers{grid-template-columns:1fr}
+.toast{max-width:calc(100% - 25px);overflow:hidden;text-overflow:ellipsis}
+}
+</style>
+</head>
+
+<body>
+
+<div class="loader" id="loader">
+<div class="loaderIn">
+<div class="loaderLogo">TAMZZY ICIKIWIR</div>
+<div class="loaderText">NOKOS ACCESS SYSTEM</div>
+<div class="loaderBar"></div>
+</div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<main class="wrap">
+
+<div class="brand">
+<div class="logo">TAMZZY ICIKIWIR</div>
+<div class="dev">NOKOS SYSTEM</div>
+</div>
+
+<section class="page active" id="loginPage">
+<div class="card">
+
+<span class="badge">
+<i class="dot"></i>SECURE ACCESS
+</span>
+
+<h1>Unlock TAMZZY ICIKIWIR</h1>
+
+<div class="sub">
+Masukkan Access Key untuk membuka katalog.
+Untuk mendapatkan key gratis, follow akun TikTok kami.
+</div>
+
+<div class="videoWrap">
+<video id="localVideo"
+controls autoplay muted loop playsinline preload="auto">
+<source src="video.mp4" type="video/mp4">
+Browser kamu tidak mendukung pemutar video.
+</video>
+<div class="videoScan"></div>
+</div>
+
+<div class="price">FREE</div>
+
+<label class="label">ACCESS KEY</label>
+
+<input id="accessKey" class="input"
+placeholder="Masukkan Access Key..."
+autocomplete="off">
+
+<button class="btn primary" id="loginBtn">
+LOGIN DENGAN KEY
+</button>
+
+<button class="btn" id="buyBtn">
+KEY FREE — FOLLOW TIKTOK
+</button>
+
+</div>
+</section>
+
+<section class="page" id="nokaPage">
+
+<span class="badge">
+<i class="dot"></i>
+<span id="roleBadge">UNLOCKED</span>
+</span>
+
+<div class="sasukeBanner">
+<img src="sasuke.jpg" alt="Sasuke">
+</div>
+
+<div class="stats">
+<div class="stat">
+<b id="totalStat">0</b>
+<span>TOTAL DATA</span>
+</div>
+
+<div class="stat">
+<b id="stockStat">0</b>
+<span>TERSEDIA</span>
+</div>
+
+<div class="stat">
+<b id="countryStat">0</b>
+<span>NEGARA</span>
+</div>
+</div>
+
+<div class="card">
+
+<div class="toolbar">
+
+<input id="search" class="search"
+placeholder="Cari negara / nomor..."
+autocomplete="off">
+
+<select id="countryFilter" class="select">
+<option value="">Semua negara</option>
+</select>
+
+</div>
+
+<div id="numberGrid" class="grid"></div>
+
+</div>
+
+<button class="btn" id="infoBtn">
+INFO AKSES
+</button>
+
+<button class="btn" id="privateChatBtn">
+PRIVATE CHAT
+</button>
+
+<button class="btn" id="logoutBtn">
+KELUAR
+</button>
+
+</section>
+
+<footer>
+TAMZZY ICIKIWIR — NOKOS SYSTEM
+</footer>
+
+</main>
+
+<button class="chatFloat" id="chatFloat">
+<span class="chatFloatIcon"></span>
+</button>
+
+<button class="privateChatFloat" id="privateChatFloat">
+<span class="privateChatIcon"></span>
+</button>
+
+<!-- GLOBAL CHAT -->
+<div class="modal" id="globalChatModal">
+<div class="modalBox globalChatBox">
+
+<div class="chatHead">
+<div>
+<div class="chatTitle">Chat Global</div>
+<div class="online">GLOBAL ONLINE</div>
+</div>
+
+<button class="copy"
+style="width:auto;margin:0"
+id="closeChatBtn">TUTUP</button>
+</div>
+
+<div id="chatMessages" class="chatMessages">
+<div class="chatLoading">Memuat chat...</div>
+</div>
+
+<div class="chatInputs">
+
+<input id="chatName"
+class="chatInput"
+maxlength="24"
+placeholder="Nama pengguna..."
+autocomplete="off">
+
+<div class="chatRow">
+
+<input id="chatMessage"
+class="chatInput"
+maxlength="500"
+placeholder="Tulis pesan..."
+autocomplete="off">
+
+<button class="chatSend" id="chatSend">
+KIRIM
+</button>
+
+</div>
+
+<div class="chatCount">
+<span id="chatCount">0</span>/500
+</div>
+
+<div id="chatError" class="chatError"></div>
+
+</div>
+</div>
+</div>
+
+<!-- PRIVATE CHAT -->
+<div class="modal" id="privateChatModal">
+<div class="modalBox privateBox">
+
+<div class="chatHead">
+<div>
+<div class="chatTitle">Private Chat</div>
+<div class="online">CHAT 1-TO-1</div>
+</div>
+
+<button class="copy"
+style="width:auto;margin:0"
+id="closePrivateBtn">TUTUP</button>
+</div>
+
+<div class="privateSearchWrap">
+<input id="privateSearch"
+class="chatInput"
+placeholder="Cari nama user..."
+autocomplete="off">
+</div>
+
+<div class="privateFilters">
+
+<button class="privateFilter active"
+data-role="">SEMUA</button>
+
+<button class="privateFilter"
+data-role="USER">USER</button>
+
+<button class="privateFilter"
+data-role="OWNER">OWNER</button>
+
+</div>
+
+<div id="privateUsers" class="privateUsers">
+<div class="chatLoading">Memuat user...</div>
+</div>
+
+<div class="privateTarget">
+<span id="privateTargetName">Pilih user</span>
+</div>
+
+<div id="privateMessages" class="chatMessages">
+<div class="chatEmpty">
+Pilih user untuk mulai chat.
+</div>
+</div>
+
+<div class="chatInputs">
+
+<div class="chatRow">
+
+<input id="privateMessage"
+class="chatInput"
+maxlength="500"
+placeholder="Tulis pesan..."
+autocomplete="off">
+
+<button class="chatSend"
+id="privateSend">
+KIRIM
+</button>
+
+</div>
+
+<div class="chatCount">
+<span id="privateCount">0</span>/500
+</div>
+
+<div id="privateError" class="chatError"></div>
+
+</div>
+</div>
+</div>
+
+<!-- INFO -->
+<div class="modal" id="infoModal">
+<div class="modalBox">
+
+<h2>INFO AKSES</h2>
+
+<p style="margin-top:9px;color:var(--muted);
+font-size:11px;line-height:1.6">
+Katalog menampilkan data nomor berdasarkan negara.
+Panel kode menggunakan API OTP eksternal.
+Jika API terputus, kode tidak dibuat secara lokal.
+</p>
+
+<button class="btn primary" id="closeInfoBtn">
+TUTUP
+</button>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+
+const $=id=>document.getElementById(id);
+
+function toast(text,success=false){
+
+const x=$("toast");
+
+x.textContent=text;
+x.classList.toggle("success",success);
+x.classList.add("show");
+
+clearTimeout(window.toastTimer);
+
+window.toastTimer=setTimeout(()=>{
+x.classList.remove("show");
+},2200);
+}
+
+/* SUPABASE */
+
+const SUPABASE_URL=
+"https://okbizarcxaqhcppvyxrc.supabase.co";
+
+const SUPABASE_KEY=
+"sb_publishable_RnFH4gO8PTDOsaMSHDkmMw_4hv7-e7A";
+
+let supabaseClient=null;
+
+try{
+
+supabaseClient=
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+}catch(e){
+
+console.error(e);
+
+}
+
+/* ACCESS */
+
+const OWNER_KEY=
+"MZ-OWNR-7X9Q-V4KP";
+
+const USER_KEY=
+"MZ-USER-3N8X-Q7LM";
+
+function showPage(id){
+
+document.querySelectorAll(".page")
+.forEach(x=>x.classList.remove("active"));
+
+$(id).classList.add("active");
+}
+
+function loginKey(){
+
+const key=$("accessKey").value.trim();
+
+if(key===OWNER_KEY){
+
+localStorage.setItem("murzzRole","OWNER");
+
+$("roleBadge").textContent="OWNER";
+
+showPage("nokaPage");
+
+fillCountries();
+renderNumbers();
+
+toast("OWNER ACCESS AKTIF",true);
+
+return;
+}
+
+if(key===USER_KEY){
+
+localStorage.setItem("murzzRole","USER");
+
+$("roleBadge").textContent="USER";
+
+showPage("nokaPage");
+
+fillCountries();
+renderNumbers();
+
+toast("USER ACCESS AKTIF",true);
+
+return;
+}
+
+toast("Access Key tidak valid");
+}
+
+function logoutKey(){
+
+localStorage.removeItem("murzzRole");
+
+showPage("loginPage");
+
+$("accessKey").value="";
+
+toast("Berhasil keluar");
+}
+
+function openBuy(){
+
+window.open(
+"https://www.tiktok.com/@fary7585?_r=1&_t=ZS-9A4GU2ptOvi",
+"_blank"
+);
+}
+
+/* DATA NOMOR */
+
+const numbers=[];
+const usedNumbers=new Set();
+
+function randomDigits(length){
+
+let result="";
+
+for(let i=0;i<length;i++){
+result+=Math.floor(Math.random()*10);
+}
+
+return result;
+}
+
+function createNumber(prefix){
+
+let number;
+
+do{
+number=prefix+randomDigits(7);
+}while(usedNumbers.has(number));
+
+usedNumbers.add(number);
+
+return number;
+}
+
+for(let i=0;i<3500;i++){
+
+numbers.push([
+"Indonesia",
+createNumber("+628")
+]);
+
+}
+
+for(let i=0;i<3500;i++){
+
+numbers.push([
+"Malaysia",
+createNumber("+601")
+]);
+
+}
+
+for(let i=0;i<800;i++){
+
+numbers.push([
+"Indonesia",
+createNumber("+628")
+]);
+
+}
+
+function fillCountries(){
+
+const select=$("countryFilter");
+
+const countries=[
+...new Set(numbers.map(x=>x[0]))
+].sort();
+
+select.innerHTML=
+'<option value="">Semua negara</option>'+
+countries.map(x=>
+`<option value="${x}">${x}</option>`
+).join("");
+}
+
+/* =================================================
+   OTP
+   TIDAK ADA OTP LOKAL / RANDOM OTP
+   ================================================= */
+
+const otpStates=new Map();
+
+function setOtpWaiting(card){
+
+const box=card.querySelector(".codeBox");
+const value=box.querySelector(".codeValue");
+const time=box.querySelector(".codeTime");
+const dots=box.querySelector(".codeDots");
+
+box.classList.remove("error");
+box.classList.add("waiting");
+
+value.textContent="MENUNGGU OTP";
+value.style.color="var(--p3)";
+value.style.filter="none";
+value.style.opacity="1";
+
+time.textContent="API";
+
+dots.style.display="flex";
+}
+
+function setOtpError(card,number){
+
+const box=card.querySelector(".codeBox");
+const value=box.querySelector(".codeValue");
+const time=box.querySelector(".codeTime");
+const dots=box.querySelector(".codeDots");
+
+box.classList.remove("waiting");
+box.classList.add("error");
+
+value.textContent="KODE OTP ERROR";
+value.style.color="var(--red)";
+value.style.filter="none";
+value.style.opacity="1";
+
+time.textContent="API OFFLINE";
+
+dots.style.display="none";
+
+otpStates.set(number,{
+status:"ERROR",
+message:"API sedang terputus"
+});
+}
+
+/*
+API OTP belum diberikan pada HTML asli.
+Karena itu fungsi ini TIDAK membuat kode random.
+
+Saat endpoint API asli tersedia, bagian request
+di fungsi ini dapat dihubungkan ke endpoint tersebut.
+*/
+
+async function requestOTP(card,number){
+
+setOtpWaiting(card);
+
+try{
+
+/*
+Tidak ada fetch ke endpoint palsu.
+Tidak ada Math.random().
+Tidak ada OTP buatan lokal.
+
+Tanpa API OTP asli, sistem menampilkan error.
+*/
+
+await new Promise(resolve=>{
+setTimeout(resolve,700);
+});
+
+setOtpError(card,number);
+
+return null;
+
+}catch(error){
+
+console.error("OTP API ERROR:",error);
+
+setOtpError(card,number);
+
+return null;
+}
+
+}
+
+function prepareCode(card,number){
+
+requestOTP(card,number);
+
+}
+
+/* RENDER */
+
+function renderNumbers(){
+
+const grid=$("numberGrid");
+
+const query=
+$("search").value
+.toLowerCase()
+.trim();
+
+const country=
+$("countryFilter").value;
+
+const filtered=
+numbers.filter(x=>{
+
+return(
+(!country||x[0]===country)&&
+(!query||
+x[0].toLowerCase().includes(query)||
+x[1].includes(query))
+);
+
+});
+
+$("totalStat").textContent=
+numbers.length.toLocaleString("id-ID");
+
+$("stockStat").textContent=
+numbers.length.toLocaleString("id-ID");
+
+$("countryStat").textContent=
+new Set(numbers.map(x=>x[0])).size;
+
+if(!filtered.length){
+
+grid.innerHTML=
+'<div class="empty">Data tidak ditemukan.</div>';
+
+return;
+}
+
+grid.innerHTML="";
+
+filtered.slice(0,100)
+.forEach((item,index)=>{
+
+const card=
+document.createElement("article");
+
+card.className="item";
+
+card.style.animationDelay=
+Math.min(index*.015,.35)+"s";
+
+const c=document.createElement("div");
+c.className="country";
+c.textContent=item[0];
+
+const n=document.createElement("div");
+n.className="num";
+n.textContent=item[1];
+
+const a=document.createElement("div");
+a.className="available";
+a.textContent="TERSEDIA";
+
+const codeBox=document.createElement("div");
+codeBox.className="codeBox waiting";
+
+const label=document.createElement("span");
+label.className="codeLabel";
+label.textContent="OTP";
+
+const code=document.createElement("span");
+code.className="codeValue";
+code.textContent="MENUNGGU OTP";
+
+const dots=document.createElement("span");
+dots.className="codeDots";
+
+for(let i=0;i<3;i++){
+
+const dot=document.createElement("i");
+dots.appendChild(dot);
+
+}
+
+const time=document.createElement("span");
+time.className="codeTime";
+time.textContent="API";
+
+codeBox.append(
+label,
+code,
+dots,
+time
+);
+
+const b=document.createElement("button");
+
+b.className="copy";
+b.textContent="SALIN NOMOR";
+
+b.onclick=()=>{
+copyNumber(item[1],b);
+};
+
+card.append(
+c,n,a,codeBox,b
+);
+
+grid.appendChild(card);
+
+setTimeout(()=>{
+prepareCode(card,item[1]);
+},100);
+
+});
+
+}
+
+async function copyNumber(number,button){
+
+try{
+
+if(navigator.clipboard){
+
+await navigator.clipboard.writeText(
+String(number)
+);
+
+}else{
+
+const t=document.createElement("textarea");
+
+t.value=number;
+t.style.position="fixed";
+t.style.opacity="0";
+
+document.body.appendChild(t);
+
+t.focus();
+t.select();
+
+document.execCommand("copy");
+
+t.remove();
+
+}
+
+button.classList.add("copied");
+button.textContent="TERSALIN";
+
+toast("Nomor berhasil disalin",true);
+
+setTimeout(()=>{
+
+button.classList.remove("copied");
+button.textContent="SALIN NOMOR";
+
+},1500);
+
+}catch(e){
+
+toast("Gagal menyalin nomor");
+
+}
+
+}
+
+$("search").oninput=renderNumbers;
+$("countryFilter").onchange=renderNumbers;
+
+/* GLOBAL CHAT */
+
+let globalChannel=null;
+let lastChatSent=0;
+
+const URL_RE=
+/(https?:\/\/|www\.|t\.me\/|wa\.me\/|discord\.gg\/)/i;
+
+function formatTime(date){
+
+return new Intl.DateTimeFormat(
+"id-ID",
+{
+day:"2-digit",
+month:"2-digit",
+hour:"2-digit",
+minute:"2-digit"
+}
+).format(new Date(date));
+
+}
+
+function renderChatMessage(row){
+
+const box=$("chatMessages");
+
+const empty=box.querySelector(".chatEmpty");
+
+if(empty)empty.remove();
+
+const el=document.createElement("div");
+el.className="msg";
+
+const top=document.createElement("div");
+top.className="msgTop";
+
+const name=document.createElement("div");
+name.className="msgName";
+name.textContent=row.name||"User";
+
+const time=document.createElement("div");
+time.className="msgTime";
+time.textContent=formatTime(row.created_at);
+
+top.append(name,time);
+
+const text=document.createElement("div");
+text.className="msgText";
+text.textContent=row.message||"";
+
+el.append(top,text);
+
+box.appendChild(el);
+box.scrollTop=box.scrollHeight;
+}
+
+async function loadChat(){
+
+if(!supabaseClient)return;
+
+const box=$("chatMessages");
+
+box.innerHTML=
+'<div class="chatLoading">Memuat chat...</div>';
+
+const r=await supabaseClient
+.from("global_chat")
+.select("id,name,message,created_at")
+.order("created_at",{ascending:true})
+.limit(100);
+
+if(r.error){
+
+box.innerHTML=
+'<div class="chatEmpty">Gagal memuat chat.</div>';
+
+return;
+}
+
+if(!r.data.length){
+
+box.innerHTML=
+'<div class="chatEmpty">Belum ada pesan.</div>';
+
+return;
+}
+
+box.innerHTML="";
+
+r.data.forEach(renderChatMessage);
+}
+
+function subscribeGlobal(){
+
+if(globalChannel||!supabaseClient)return;
+
+globalChannel=
+supabaseClient
+.channel("tamzzy-global-chat")
+.on(
+"postgres_changes",
+{
+event:"INSERT",
+schema:"public",
+table:"global_chat"
+},
+payload=>{
+
+if(payload.new)
+renderChatMessage(payload.new);
+
+}
+)
+.subscribe();
+}
+
+async function sendChat(){
+
+const name=$("chatName").value.trim();
+const message=$("chatMessage").value.trim();
+
+if(name.length<2)
+return toast("Nama minimal 2 karakter");
+
+if(!message)
+return toast("Pesan kosong");
+
+if(message.length>500)
+return toast("Pesan maksimal 500 karakter");
+
+if(URL_RE.test(message))
+return toast("Link tidak diizinkan");
+
+if(Date.now()-lastChatSent<2500)
+return toast("Tunggu beberapa detik");
+
+if(!supabaseClient)
+return toast("Supabase tidak tersedia");
+
+$("chatSend").disabled=true;
+
+try{
+
+const r=await supabaseClient
+.from("global_chat")
+.insert({
+name,
+message
+})
+.select()
+.single();
+
+if(r.error)throw r.error;
+
+localStorage.setItem("murzzChatName",name);
+
+$("chatMessage").value="";
+$("chatCount").textContent="0";
+
+lastChatSent=Date.now();
+
+toast("Pesan terkirim",true);
+
+}catch(e){
+
+console.error(e);
+
+toast("Pesan gagal dikirim");
+
+}
+
+$("chatSend").disabled=false;
+}
+
+$("chatFloat").onclick=()=>{
+
+$("globalChatModal").classList.add("show");
+
+loadChat();
+subscribeGlobal();
+
+const n=localStorage.getItem("murzzChatName");
+
+if(n)$("chatName").value=n;
+
+};
+
+$("closeChatBtn").onclick=()=>{
+$("globalChatModal").classList.remove("show");
+};
+
+$("chatSend").onclick=sendChat;
+
+$("chatMessage").oninput=()=>{
+$("chatCount").textContent=$("chatMessage").value.length;
+};
+
+/* PRIVATE CHAT */
+
+let currentAuthUser=null;
+let currentPrivateUser=null;
+let privateChannel=null;
+let allPrivateUsers=[];
+let privateRoleFilter="";
+
+async function ensureAnonymousAuth(){
+
+if(!supabaseClient)
+throw new Error("Supabase belum tersedia");
+
+const s=await supabaseClient.auth.getSession();
+
+if(s.data?.session?.user){
+
+currentAuthUser=s.data.session.user;
+return currentAuthUser;
+
+}
+
+const r=await supabaseClient.auth.signInAnonymously();
+
+if(r.error)throw r.error;
+
+currentAuthUser=r.data.user;
+
+return currentAuthUser;
+}
+
+async function createPrivateProfile(){
+
+const role=
+localStorage.getItem("murzzRole")||"USER";
+
+let name=
+localStorage.getItem("murzzChatName");
+
+if(!name)
+name=role==="OWNER"?"Owner":"User";
+
+const r=
+await supabaseClient
+.from("chat_profiles")
+.upsert(
+{
+id:currentAuthUser.id,
+name,
+role
+},
+{
+onConflict:"id"
+}
+);
+
+if(r.error)console.error(r.error);
+}
+
+async function loadPrivateUsers(){
+
+$("privateUsers").innerHTML=
+'<div class="chatLoading">Memuat user...</div>';
+
+try{
+
+const r=
+await supabaseClient
+.from("chat_profiles")
+.select("id,name,role,created_at")
+.neq("id",currentAuthUser.id)
+.order("created_at",{ascending:false})
+.limit(500);
+
+if(r.error)throw r.error;
+
+allPrivateUsers=r.data||[];
+
+renderPrivateUsers();
+
+}catch(e){
+
+console.error(e);
+
+$("privateUsers").innerHTML=
+'<div class="chatEmpty">Gagal memuat user.</div>';
+
+}
+}
+
+function renderPrivateUsers(){
+
+const box=$("privateUsers");
+
+const search=
+$("privateSearch").value.trim().toLowerCase();
+
+const filtered=
+allPrivateUsers.filter(user=>{
+
+const name=
+(user.name||"User").toLowerCase();
+
+const role=
+(user.role||"USER").toUpperCase();
+
+return(
+(!search||name.includes(search))&&
+(!privateRoleFilter||role===privateRoleFilter)
+);
+
+});
+
+if(!filtered.length){
+
+box.innerHTML=
+'<div class="chatEmpty">User tidak ditemukan.</div>';
+
+return;
+}
+
+box.innerHTML="";
+
+filtered.forEach(user=>{
+
+const b=document.createElement("button");
+
+b.className="privateUser";
+
+if(currentPrivateUser?.id===user.id)
+b.classList.add("active");
+
+const n=document.createElement("span");
+n.className="privateUserName";
+n.textContent=user.name||"User";
+
+const r=document.createElement("span");
+r.className="privateUserRole";
+r.textContent=
+user.role==="OWNER"?"OWNER":"USER";
+
+b.append(n,r);
+
+b.onclick=()=>selectPrivateUser(user);
+
+box.appendChild(b);
+
+});
+
+}
+
+async function selectPrivateUser(user){
+
+currentPrivateUser=user;
+
+$("privateTargetName").textContent=
+(user.name||"User")+" • "+
+(user.role==="OWNER"?"OWNER":"USER");
+
+renderPrivateUsers();
+
+await loadPrivateMessages();
+
+subscribePrivate();
+}
+
+async function loadPrivateMessages(){
+
+if(!currentPrivateUser)return;
+
+const box=$("privateMessages");
+
+box.innerHTML=
+'<div class="chatLoading">Memuat pesan...</div>';
+
+try{
+
+const r=
+await supabaseClient
+.from("private_messages")
+.select(
+"id,sender_id,receiver_id,message,created_at"
+)
+.or(
+"and(sender_id.eq."+
+currentAuthUser.id+
+",receiver_id.eq."+
+currentPrivateUser.id+
+"),and(sender_id.eq."+
+currentPrivateUser.id+
+",receiver_id.eq."+
+currentAuthUser.id+
+")"
+)
+.order("created_at",{ascending:true})
+.limit(200);
+
+if(r.error)throw r.error;
+
+if(!r.data.length){
+
+box.innerHTML=
+'<div class="chatEmpty">Belum ada pesan.<br>Mulai percakapan.</div>';
+
+return;
+}
+
+box.innerHTML="";
+
+r.data.forEach(renderPrivateMessage);
+
+}catch(e){
+
+console.error(e);
+
+box.innerHTML=
+'<div class="chatEmpty">Gagal memuat pesan.</div>';
+
+}
+}
+
+function renderPrivateMessage(row){
+
+const box=$("privateMessages");
+
+if(
+[...box.children].some(
+x=>x.dataset.id===String(row.id)
+)
+)return;
+
+const empty=box.querySelector(".chatEmpty");
+
+if(empty)empty.remove();
+
+const el=document.createElement("div");
+
+el.className="msg";
+el.dataset.id=String(row.id);
+
+const top=document.createElement("div");
+top.className="msgTop";
+
+const name=document.createElement("div");
+name.className="msgName";
+
+name.textContent=
+row.sender_id===currentAuthUser.id
+?"Kamu"
+:(currentPrivateUser?.name||"User");
+
+const time=document.createElement("div");
+time.className="msgTime";
+time.textContent=formatTime(row.created_at);
+
+top.append(name,time);
+
+const text=document.createElement("div");
+text.className="msgText";
+text.textContent=row.message;
+
+el.append(top,text);
+
+box.appendChild(el);
+box.scrollTop=box.scrollHeight;
+}
+
+function subscribePrivate(){
+
+if(privateChannel){
+
+supabaseClient.removeChannel(privateChannel);
+privateChannel=null;
+
+}
+
+privateChannel=
+supabaseClient
+.channel("private-"+currentAuthUser.id)
+.on(
+"postgres_changes",
+{
+event:"INSERT",
+schema:"public",
+table:"private_messages",
+filter:"receiver_id=eq."+currentAuthUser.id
+},
+payload=>{
+
+if(
+payload.new&&
+currentPrivateUser&&
+payload.new.sender_id===currentPrivateUser.id
+){
+
+renderPrivateMessage(payload.new);
+
+}
+
+}
+)
+.subscribe();
+}
+
+async function sendPrivateMessage(){
+
+if(!currentPrivateUser)
+return toast("Pilih user terlebih dahulu");
+
+const input=$("privateMessage");
+const message=input.value.trim();
+
+if(!message)
+return toast("Pesan kosong");
+
+if(message.length>500)
+return toast("Pesan maksimal 500 karakter");
+
+if(URL_RE.test(message))
+return toast("Link tidak diizinkan");
+
+$("privateSend").disabled=true;
+
+try{
+
+const r=
+await supabaseClient
+.from("private_messages")
+.insert({
+sender_id:currentAuthUser.id,
+receiver_id:currentPrivateUser.id,
+message
+})
+.select()
+.single();
+
+if(r.error)throw r.error;
+
+input.value="";
+$("privateCount").textContent="0";
+
+renderPrivateMessage(r.data);
+
+toast("Pesan terkirim",true);
+
+}catch(e){
+
+console.error(e);
+
+toast("Pesan gagal dikirim");
+
+}
+
+$("privateSend").disabled=false;
+}
+
+async function openPrivateChat(){
+
+$("privateChatModal").classList.add("show");
+
+try{
+
+await ensureAnonymousAuth();
+await createPrivateProfile();
+await loadPrivateUsers();
+
+}catch(e){
+
+console.error(e);
+
+$("privateUsers").innerHTML=
+'<div class="chatEmpty">Gagal menghubungkan private chat.</div>';
+
+}
+}
+
+$("privateChatFloat").onclick=openPrivateChat;
+$("privateChatBtn").onclick=openPrivateChat;
+
+$("closePrivateBtn").onclick=()=>{
+$("privateChatModal").classList.remove("show");
+};
+
+$("privateSearch").oninput=renderPrivateUsers;
+
+document.querySelectorAll(".privateFilter")
+.forEach(button=>{
+
+button.onclick=()=>{
+
+document
+.querySelectorAll(".privateFilter")
+.forEach(x=>x.classList.remove("active"));
+
+button.classList.add("active");
+
+privateRoleFilter=
+button.dataset.role||"";
+
+renderPrivateUsers();
+
+};
+
+});
+
+$("privateSend").onclick=sendPrivateMessage;
+
+$("privateMessage").oninput=()=>{
+$("privateCount").textContent=
+$("privateMessage").value.length;
+};
+
+$("privateMessage").onkeydown=e=>{
+
+if(e.key==="Enter"){
+
+e.preventDefault();
+sendPrivateMessage();
+
+}
+
+};
+
+/* INFO */
+
+$("infoBtn").onclick=()=>{
+$("infoModal").classList.add("show");
+};
+
+$("closeInfoBtn").onclick=()=>{
+$("infoModal").classList.remove("show");
+};
+
+/* BUTTON */
+
+$("loginBtn").onclick=loginKey;
+$("buyBtn").onclick=openBuy;
+$("logoutBtn").onclick=logoutKey;
+
+$("accessKey").onkeydown=e=>{
+
+if(e.key==="Enter")
+loginKey();
+
+};
+
+document.addEventListener("keydown",e=>{
+
+if(e.key==="Escape"){
+
+document
+.querySelectorAll(".modal")
+.forEach(x=>x.classList.remove("show"));
+
+}
+
+});
+
+/* PARTICLES */
+
+const canvas=$("fx");
+const ctx=canvas.getContext("2d");
+
+let particles=[];
+
+function resize(){
+
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+}
+
+function createParticles(){
+
+particles=
+Array.from(
+{length:55},
+()=>({
+
+x:Math.random()*innerWidth,
+y:Math.random()*innerHeight,
+r:Math.random()*1.5+.3,
+vx:(Math.random()-.5)*.25,
+vy:(Math.random()-.5)*.25,
+a:Math.random()*.45+.1
+
+})
+);
+
+}
+
+function animate(){
+
+ctx.clearRect(
+0,0,
+innerWidth,
+innerHeight
+);
+
+particles.forEach(p=>{
+
+p.x+=p.vx;
+p.y+=p.vy;
+
+if(p.x<0)p.x=innerWidth;
+if(p.x>innerWidth)p.x=0;
+if(p.y<0)p.y=innerHeight;
+if(p.y>innerHeight)p.y=0;
+
+ctx.beginPath();
+
+ctx.arc(
+p.x,p.y,p.r,
+0,Math.PI*2
+);
+
+ctx.fillStyle=
+"rgba(184,76,255,"+
+p.a+")";
+
+ctx.fill();
+
+});
+
+requestAnimationFrame(animate);
+
+}
+
+resize();
+createParticles();
+animate();
+
+window.addEventListener("resize",resize);
+
+/* START */
+
+window.addEventListener("load",()=>{
+
+setTimeout(()=>{
+$("loader").classList.add("hide");
+},1200);
+
+const role=
+localStorage.getItem("murzzRole");
+
+if(role==="OWNER"||role==="USER"){
+
+$("roleBadge").textContent=role;
+
+setTimeout(()=>{
+
+showPage("nokaPage");
+
+fillCountries();
+renderNumbers();
+
+},1300);
+
+}
+
+const video=$("localVideo");
+
+if(video){
+
+video.muted=true;
+
+const p=video.play();
+
+if(p?.catch)p.catch(()=>{});
+
+}
+
+});
+
+</script>
+
+</body>
+  </html>w
